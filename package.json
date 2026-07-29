@@ -8,12 +8,12 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZED-rgy/xiaoguang-account-console.git"
+    "url": "git+https://github.com/ZED-rgy/creator-ops-console.git"
   },
   "bugs": {
-    "url": "https://github.com/ZED-rgy/xiaoguang-account-console/issues"
+    "url": "https://github.com/ZED-rgy/creator-ops-console/issues"
   },
-  "homepage": "https://github.com/ZED-rgy/xiaoguang-account-console#readme",
+  "homepage": "https://github.com/ZED-rgy/creator-ops-console#readme",
   "keywords": [
     "electron",
     "fastapi",
