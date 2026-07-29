@@ -1,0 +1,74 @@
+{
+  "name": "account-console",
+  "productName": "小光账号",
+  "description": "Local-first desktop workspace for account operations, publishing tasks, and work analytics.",
+  "version": "0.2.6",
+  "author": "ZED-rgy",
+  "license": "Apache-2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZED-rgy/xiaoguang-account-console.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ZED-rgy/xiaoguang-account-console/issues"
+  },
+  "homepage": "https://github.com/ZED-rgy/xiaoguang-account-console#readme",
+  "keywords": [
+    "electron",
+    "fastapi",
+    "sqlite",
+    "account-management",
+    "local-first"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "desktop": "electron .",
+    "collect": "electron . --collect",
+    "server": "python run_server.py",
+    "backend:build": "powershell -ExecutionPolicy Bypass -File scripts/build-backend.ps1",
+    "pack": "npm run backend:build && npx --yes electron-builder --dir",
+    "dist": "npm run backend:build && npx --yes electron-builder --win portable",
+    "test": "node --test tests/account-lifecycle.test.js tests/account-visuals.test.js tests/autostart.test.js tests/charts.test.js tests/collection-candidates.test.js tests/collection-coordinator.test.js tests/collection-freshness.test.js tests/collection-initial.test.js tests/parsers.test.js tests/platform-capabilities.test.js tests/profile.test.js tests/runtime-supervisor.test.js tests/settings-runtime.test.js && python -m unittest discover -s tests -t .",
+    "check": "node --check frontend/account-visuals.js && node --check frontend/app.js && node --check electron/account-lifecycle.js && node --check electron/collection-candidates.js && node --check electron/collection-coordinator.js && node --check electron/collection-freshness.js && node --check electron/collection-initial.js && node --check electron/main.js && node --check electron/preload.js && node --check electron/collector.js && node --check electron/parsers.js && node --check electron/platform-capabilities.js && node --check electron/profile.js && node --check electron/runtime-supervisor.js && node --check electron/settings-runtime.js && npm run test"
+  },
+  "build": {
+    "appId": "com.local.account-console",
+    "productName": "小光账号",
+    "asar": false,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "assets/**/*",
+      "backend/**/*",
+      "electron/**/*",
+      "frontend/**/*",
+      "shared/**/*",
+      "scripts/**/*",
+      "run_server.py",
+      "requirements.txt",
+      "requirements-build.txt",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "dist-backend/account-console-server.exe",
+        "to": "backend/account-console-server.exe"
+      }
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "portable"
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "43.0.0"
+  }
+}

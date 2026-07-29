@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>小光账号</title>
+  <link rel="icon" href="/assets/platform-icons/default.svg">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body data-view="dashboard">
+  <div class="shell">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">账</span>
+        <div class="brand-text">
+          <strong>小光账号</strong>
+          <em>Account Console</em>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="dashboard">
+          <svg viewBox="0 0 16 16"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z"/></svg>
+          总览
+        </button>
+        <button class="nav-item" data-view="accounts">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="5" r="2.6"/><path d="M2.8 13.5c.7-2.6 2.8-4 5.2-4s4.5 1.4 5.2 4"/></svg>
+          账号
+        </button>
+        <button class="nav-item" data-view="works">
+          <svg viewBox="0 0 16 16"><path d="M2.5 13.5v-5M6.5 13.5v-9M10.5 13.5v-6M14 13.5V3"/></svg>
+          作品
+        </button>
+        <button class="nav-item" data-view="collect">
+          <svg viewBox="0 0 16 16"><path d="M8 1.5v9M4.5 7l3.5 3.5L11.5 7M2.5 13.5h11"/></svg>
+          采集中心
+        </button>
+        <button class="nav-item" data-view="settings">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.8v2M8 12.2v2M1.8 8h2M12.2 8h2M3.6 3.6l1.4 1.4M11 11l1.4 1.4M12.4 3.6L11 5M5 11l-1.4 1.4"/></svg>
+          设置
+        </button>
+      </nav>
+
+      <div id="sideAccounts" class="side-accounts"></div>
+
+      <div class="sync-box">
+        <div class="sync-line">
+          <span id="collectDot" class="dot"></span>
+          <div class="sync-text">
+            <strong id="collectState">未采集</strong>
+            <em id="collectTime">本地数据主库</em>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-head">
+          <h1 id="pageTitle">总览</h1>
+          <p id="pageSubtitle"></p>
+        </div>
+        <div class="topbar-actions">
+          <input id="globalSearch" class="search" type="search" placeholder="搜索账号或作品">
+          <select id="rangeSelect" class="input" style="display:none">
+            <option value="7" selected>近 7 天</option>
+            <option value="30">近 30 天</option>
+            <option value="90">近 90 天</option>
+          </select>
+          <button id="refreshBtn" class="btn subtle">刷新</button>
+        </div>
+      </header>
+
+      <!-- ============ 总览（数据分析仪表盘） ============ -->
+      <section id="dashboardView" class="view active">
+        <div id="kpiCards" class="stat-grid"></div>
+        <div class="grid-2">
+          <div class="card chart-card">
+            <header class="card-head"><h2>发布与互动趋势</h2><span class="muted" id="trendNote"></span></header>
+            <div class="chart-box"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <header class="card-head"><h2>互动结构</h2></header>
+            <div class="chart-box"><canvas id="mixChart"></canvas></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card chart-card">
+            <header class="card-head"><h2>账号数据对比</h2><span class="muted" id="accountChartNote"></span></header>
+            <div class="chart-box"><canvas id="accountChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <header class="card-head"><h2>平台数据对比</h2></header>
+            <div class="chart-box"><canvas id="platformChart"></canvas></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <header class="card-head">
+              <h2>作品排行</h2>
+              <div class="rank-tabs" id="rankTabs">
+                <button data-rank="comments" class="active">按评论</button>
+                <button data-rank="likes">按点赞</button>
+                <button data-rank="interactions">按互动</button>
+              </div>
+            </header>
+            <div id="topWorks" class="row-list"></div>
+          </div>
+          <div class="card">
+            <header class="card-head"><h2>账号排行</h2><span class="muted">累计互动</span></header>
+            <div id="rankList" class="row-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 账号详情（下钻） ============ -->
+      <section id="accountDetailView" class="view">
+        <div class="toolbar">
+          <button id="detailBackBtn" class="btn subtle">← 返回</button>
+          <span id="adHeader" class="inline-stats"></span>
+          <span style="flex:1"></span>
+          <button id="adCollectBtn" class="btn primary mini">采集该账号</button>
+          <button id="adWorkspaceBtn" class="btn subtle mini">打开账号</button>
+        </div>
+        <div id="adKpis" class="stat-grid"></div>
+        <div class="grid-2">
+          <div class="card chart-card">
+            <header class="card-head"><h2>发布与互动趋势</h2><span class="muted" id="adTrendNote"></span></header>
+            <div class="chart-box"><canvas id="adTrendChart"></canvas></div>
+          </div>
+          <div class="card">
+            <header class="card-head"><h2>最近采集</h2></header>
+            <div id="adRuns" class="row-list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <header class="card-head"><h2>账号资料</h2><button id="adEditBtn" class="btn subtle mini">编辑</button></header>
+          <div id="adProfile" class="profile-grid"></div>
+        </div>
+        <div class="card">
+          <header class="card-head"><h2>作品明细</h2></header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>作品</th><th>发布时间</th><th class="num">点赞</th><th class="num">评论</th><th class="num">收藏</th><th class="num">分享</th><th class="num">播放</th></tr>
+              </thead>
+              <tbody id="adWorksTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 设置 ============ -->
+      <section id="settingsView" class="view">
+        <div class="grid-2">
+          <div class="card">
+            <header class="card-head"><h2>常规</h2></header>
+            <div class="pad">
+              <label class="setting-row">
+                <span class="setting-desc"><strong>开机自动启动</strong><span class="muted">随 Windows 启动，保证定时采集不断档</span></span>
+                <input type="checkbox" id="setAutostart">
+              </label>
+              <label class="setting-row sub" id="autostartHiddenRow">
+                <span class="setting-desc"><strong>自启时静默进托盘</strong><span class="muted">开机启动时不弹主窗口，只挂后台</span></span>
+                <input type="checkbox" id="setAutostartHidden">
+              </label>
+              <div class="setting-row">
+                <span class="setting-desc"><strong>关闭主窗口时</strong><span class="muted">托盘常驻才能跑定时采集</span></span>
+                <select id="setCloseBehavior" class="input" style="width:150px">
+                  <option value="tray">最小化到托盘</option>
+                  <option value="quit">直接退出</option>
+                </select>
+              </div>
+              <label class="setting-row">
+                <span class="setting-desc"><strong>采集完成系统通知</strong><span class="muted">定时/托盘采集结束后弹出结果通知</span></span>
+                <input type="checkbox" id="setNotify">
+              </label>
+            </div>
+          </div>
+          <div class="card">
+            <header class="card-head"><h2>数据与关于</h2></header>
+            <div class="pad">
+              <div class="setting-row">
+                <span class="setting-desc"><strong>数据目录</strong><span class="muted" id="aboutDataDir">-</span></span>
+                <button id="openDataDirBtn" class="btn subtle mini">打开文件夹</button>
+              </div>
+              <div class="setting-row">
+                <span class="setting-desc"><strong>数据库备份</strong><span class="muted" id="aboutLastBackup">-</span></span>
+                <button id="backupNowBtn" class="btn subtle mini">立即备份</button>
+              </div>
+              <div class="setting-row">
+                <span class="setting-desc"><strong>版本</strong><span class="muted">小光账号 · 本地优先的账号运营台</span></span>
+                <span class="muted" id="aboutVersion">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <header class="card-head">
+              <h2>账号字段</h2>
+              <div class="setting-inline">
+                <button id="restoreFieldsBtn" class="btn subtle mini">恢复内置字段</button>
+                <button id="addFieldBtn" class="btn subtle mini">新增字段</button>
+              </div>
+            </header>
+            <div class="pad">
+              <p class="muted">账号名字、主页链接为固定字段不可删除；其余字段（含内置）都可删改，删除不会销毁账号里已保存的值，「恢复内置字段」可找回。下拉类型的选项用逗号分隔。注意：删除「平台」字段后新账号将无法归属平台，筛选和采集分组会受影响。</p>
+              <div id="fieldList" class="field-list"></div>
+              <div class="setting-actions">
+                <button id="saveFieldsBtn" class="btn primary">保存字段设置</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <header class="card-head"><h2>平台管理</h2></header>
+            <div class="pad">
+              <p class="muted">平台列表用于账号归属、筛选和采集分组；已支持采集的平台（抖音）不能删除。</p>
+              <div id="platformList" class="pf-toggles" style="margin-top:10px"></div>
+              <div class="setting-inline" style="margin-top:14px">
+                <input id="newPlatformInput" class="input" placeholder="新平台名称" style="width:160px">
+                <button id="addPlatformBtn" class="btn subtle">添加</button>
+              </div>
+              <div class="setting-actions">
+                <button id="savePlatformsBtn" class="btn primary">保存平台设置</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 账号管理与账号标签 ============ -->
+      <section id="accountsView" class="view">
+        <div class="account-shell">
+          <div class="ws-tabbar">
+            <button id="accountManagerTab" class="ws-page-tab active" onclick="activateWorkspaceTab('accounts')">
+              <svg viewBox="0 0 16 16"><circle cx="8" cy="5" r="2.6"/><path d="M2.8 13.5c.7-2.6 2.8-4 5.2-4s4.5 1.4 5.2 4"/></svg>账号管理
+            </button>
+            <div id="wsTabStrip" class="ws-tabstrip"></div>
+          </div>
+          <div id="accountManagerPanel" class="account-manager-panel">
+            <div class="toolbar account-toolbar">
+              <button id="newAccountBtn" class="btn primary">＋ 添加账号</button>
+              <select id="platformFilter" class="input">
+                <option value="">全部平台</option>
+                <option>抖音</option><option>快手</option><option>小红书</option><option>B站</option><option>咸鱼</option>
+              </select>
+              <select id="statusFilter" class="input">
+                <option value="">全部状态</option>
+                <option>正常</option><option>养号</option><option>限流</option><option>处罚/封号</option>
+              </select>
+              <span id="accountStats" class="inline-stats"></span>
+            </div>
+            <p class="account-guide">添加账号后选择平台并完成登录，昵称、头像和登录状态会自动同步。</p>
+            <div class="card account-table-card">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>账号</th>
+                      <th>状态</th>
+                      <th>登录态</th>
+                      <th class="num">粉丝</th>
+                      <th class="num">作品</th>
+                      <th class="actions-col"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="accountsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="ws-stage" id="wsStage" hidden>
+            <div class="ws-toolbar">
+              <div class="ws-current">
+                <strong id="wsAccountName">未选择账号</strong>
+                <em id="wsAccountMeta">从账号管理或左侧列表打开账号</em>
+              </div>
+              <div class="ws-tabs">
+                <button class="ws-tab active" data-target="publish">发布</button>
+                <button class="ws-tab" data-target="works">作品管理</button>
+                <button class="ws-tab" data-target="home">主页</button>
+              </div>
+              <div class="ws-nav">
+                <button id="wsBack" class="btn icon" title="后退">←</button>
+                <button id="wsForward" class="btn icon" title="前进">→</button>
+                <button id="wsReload" class="btn icon" title="刷新">⟳</button>
+              </div>
+              <div class="ws-actions">
+                <span id="wsProfileStatus" class="ws-profile-status" aria-live="polite"></span>
+                <button id="wsSyncProfile" class="btn subtle">重新同步资料</button>
+              </div>
+            </div>
+            <div id="embedHost" class="embed-host"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 作品 ============ -->
+      <section id="worksView" class="view">
+        <div class="toolbar">
+          <select id="workPlatformFilter" class="input">
+            <option value="">全部平台</option>
+            <option>抖音</option><option>快手</option><option>小红书</option><option>B站</option><option>咸鱼</option>
+          </select>
+          <select id="workSort" class="input" aria-label="作品排序方式">
+            <option value="collected">最近采集</option>
+            <option value="published">最新发布</option>
+          </select>
+          <span id="workStats" class="inline-stats"></span>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>作品</th>
+                  <th>账号</th>
+                  <th>发布时间</th>
+                  <th>采集时间</th>
+                  <th class="num">点赞</th>
+                  <th class="num">评论</th>
+                  <th class="num">收藏</th>
+                  <th class="num">分享</th>
+                  <th class="num">播放</th>
+                  <th class="actions-col"></th>
+                </tr>
+              </thead>
+              <tbody id="worksTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 采集中心 ============ -->
+      <section id="collectView" class="view">
+        <div class="grid-2">
+          <div class="card">
+            <header class="card-head"><h2>采集设置</h2></header>
+            <div class="pad">
+              <div class="setting-row">
+                <div>
+                  <strong>定时自动采集</strong>
+                  <p class="muted">应用运行时到点自动采集公开互动数据。</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="autoToggle"><span></span></label>
+              </div>
+              <div class="setting-row">
+                <div><strong>采集频率</strong><p class="muted">每天或每周固定一天。</p></div>
+                <div class="setting-inline">
+                  <select id="freqSelect" class="input" style="width:90px">
+                    <option value="daily">每天</option>
+                    <option value="weekly">每周</option>
+                  </select>
+                  <select id="weekdaySelect" class="input" style="width:90px;display:none">
+                    <option value="1">周一</option><option value="2">周二</option><option value="3">周三</option>
+                    <option value="4">周四</option><option value="5">周五</option><option value="6">周六</option>
+                    <option value="0">周日</option>
+                  </select>
+                  <input id="collectTimeInput" class="input" type="time" value="06:00" style="width:110px">
+                </div>
+              </div>
+              <div class="setting-row">
+                <div><strong>每账号扫描上限</strong><p class="muted">每次最多采集账号最新 N 条作品（5~100）。</p></div>
+                <input id="scanLimitInput" class="input" type="number" min="5" max="100" value="20" style="width:90px">
+              </div>
+              <div class="setting-row">
+                <div><strong>采集时显示浏览器窗口</strong><p class="muted">手动采集时弹出真实窗口，方便观察进度和登录/验证问题；定时采集始终后台隐藏。</p></div>
+                <label class="switch"><input type="checkbox" id="showBrowserToggle" checked><span></span></label>
+              </div>
+              <div class="setting-row">
+                <div><strong>采集平台</strong><p class="muted">先跑通抖音，其它平台逐步开放。</p></div>
+                <div id="platformToggles" class="pf-toggles"></div>
+              </div>
+              <div class="setting-actions">
+                <button id="saveCollectCfg" class="btn primary">保存设置</button>
+                <button id="setupTaskBtn" class="btn subtle" title="注册系统级定时任务">注册系统定时（可选）</button>
+              </div>
+              <p class="muted hint">系统定时需在项目目录运行 scripts/setup-collect-schedule.bat，应用没开也能在凌晨自动采集。</p>
+            </div>
+          </div>
+          <div class="card">
+            <header class="card-head"><h2>采集账号登录</h2></header>
+            <div class="pad">
+              <p class="muted">用<b>采集专用小号</b>登录各平台，登录态复用后即可采集主页公开数据，不影响主力账号。</p>
+              <div id="loginPlatforms" class="login-grid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 采集进度实况 -->
+        <div id="collectLive" class="card collect-live" hidden>
+          <div class="cl-main">
+            <span class="cl-spinner"></span>
+            <div class="cl-text">
+              <strong id="clTitle">采集中</strong>
+              <em id="clDetail"></em>
+            </div>
+          </div>
+          <button id="stopCollectBtn" class="btn danger-ghost mini">停止采集</button>
+        </div>
+
+        <div class="card">
+          <header class="card-head">
+            <h2>采集目标</h2>
+            <span class="muted" id="nextRunNote" style="flex:1"></span>
+            <button id="collectNewAccount" class="btn subtle mini">＋ 添加采集目标</button>
+            <button id="collectRunAll" class="btn primary mini">立即采集全部</button>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>账号</th><th>状态</th><th>主页链接</th><th class="num">作品</th><th class="actions-col"></th></tr>
+              </thead>
+              <tbody id="collectTargets"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <header class="card-head"><h2>采集历史</h2></header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>时间</th><th>账号</th><th>平台</th><th>触发</th><th>结果</th><th class="num">作品</th></tr>
+              </thead>
+              <tbody id="collectHistory"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="collectStatus" class="notice" hidden></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 平台选择：账号接入的主入口 -->
+  <section id="platformPicker" class="platform-picker" role="dialog" aria-modal="true" aria-labelledby="platformPickerTitle" hidden>
+    <header class="platform-picker-head">
+      <div>
+        <h2 id="platformPickerTitle">添加账号</h2>
+        <p>选择要登录的平台，登录成功后账号会自动加入列表。</p>
+      </div>
+      <button type="button" id="closePlatformPicker" class="btn icon" aria-label="关闭平台选择">✕</button>
+    </header>
+    <div class="platform-picker-body">
+      <div class="picker-section-label">已支持平台</div>
+      <div id="platformPickerGrid" class="platform-picker-grid"></div>
+      <div class="platform-picker-note">
+        <span>需要录入暂时无法登录的平台？</span>
+        <button type="button" id="manualAccountBtn" class="btn subtle mini">手动录入</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 采集目标选择：已有账号优先，新账号登录作为次级入口 -->
+  <section id="collectTargetPicker" class="platform-picker collect-target-picker" role="dialog"
+    aria-modal="true" aria-labelledby="collectTargetPickerTitle" hidden>
+    <header class="platform-picker-head">
+      <div>
+        <h2 id="collectTargetPickerTitle">添加采集目标</h2>
+        <p>直接选择已有账号，不需要重新登录；列表中没有需要的账号时再登录新账号。</p>
+      </div>
+      <button type="button" id="closeCollectTargetPicker" class="btn icon" aria-label="关闭采集目标选择">✕</button>
+    </header>
+    <div class="platform-picker-body">
+      <div class="collect-picker-summary">
+        <strong>已有账号</strong>
+        <span id="collectCandidateSummary" class="muted"></span>
+      </div>
+      <div id="collectAccountChoices" class="collect-account-choices"></div>
+      <div class="collect-picker-actions">
+        <button type="button" id="collectLoginNewAccount" class="btn subtle">登录新账号</button>
+        <button type="button" id="addSelectedCollectTargets" class="btn primary" disabled>添加所选账号</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 账号编辑抽屉 -->
+  <aside id="accountEditor" class="drawer">
+    <header class="drawer-head">
+      <h2 id="editorTitle">新增账号</h2>
+      <button id="closeAccountEditor" class="btn icon">✕</button>
+    </header>
+    <form id="accountForm" class="drawer-body form">
+      <input type="hidden" name="id">
+      <div id="accountFormFields" class="form"></div>
+      <div class="form-actions">
+        <button type="submit" class="btn primary">保存</button>
+        <button type="button" id="deleteAccountBtn" class="btn danger-ghost">删除账号</button>
+      </div>
+    </form>
+  </aside>
+
+  <div id="overlay" class="overlay" hidden></div>
+  <div id="toast" class="toast"></div>
+
+  <script src="/assets/charts.js"></script>
+  <script src="/assets/account-visuals.js"></script>
+  <script src="/assets/app.js"></script>
+</body>
+</html>

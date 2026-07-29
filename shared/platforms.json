@@ -1,0 +1,76 @@
+[
+  {
+    "key": "douyin",
+    "name": "抖音",
+    "icon": "douyin.svg",
+    "collect_supported": true,
+    "creator_urls": {
+      "home": "https://creator.douyin.com/",
+      "publish": "https://creator.douyin.com/creator-micro/content/upload",
+      "works": "https://creator.douyin.com/creator-micro/content/manage"
+    },
+    "homepage_patterns": [
+      { "pattern": "https?://www\\.douyin\\.com/user/[\\w.-]+" },
+      { "pattern": "https?://v\\.douyin\\.com/[A-Za-z0-9_-]+/?", "ensure_trailing_slash": true }
+    ]
+  },
+  {
+    "key": "kuaishou",
+    "name": "快手",
+    "icon": "kuaishou.svg",
+    "collect_supported": true,
+    "creator_urls": {
+      "home": "https://cp.kuaishou.com/",
+      "publish": "https://cp.kuaishou.com/article/publish/video",
+      "works": "https://cp.kuaishou.com/article/manage/video"
+    },
+    "homepage_patterns": [
+      { "pattern": "https?://www\\.kuaishou\\.com/profile/[A-Za-z0-9._-]+", "principal_requires_letter": true },
+      { "pattern": "https?://v\\.kuaishou\\.com/[A-Za-z0-9_-]+/?" }
+    ]
+  },
+  {
+    "key": "xiaohongshu",
+    "name": "小红书",
+    "icon": "xiaohongshu.svg",
+    "collect_supported": true,
+    "creator_urls": {
+      "home": "https://creator.xiaohongshu.com/",
+      "publish": "https://creator.xiaohongshu.com/publish/publish?source=official",
+      "works": "https://creator.xiaohongshu.com/creator/notes"
+    },
+    "homepage_patterns": [
+      { "pattern": "https?://www\\.xiaohongshu\\.com/user/profile/[A-Za-z0-9._-]+" },
+      { "pattern": "https?://xhslink\\.com/[A-Za-z0-9/_-]+" }
+    ]
+  },
+  {
+    "key": "bilibili",
+    "name": "B站",
+    "icon": "bilibili.svg",
+    "collect_supported": true,
+    "creator_urls": {
+      "home": "https://member.bilibili.com/platform/home",
+      "publish": "https://member.bilibili.com/platform/upload/video/frame",
+      "works": "https://member.bilibili.com/platform/upload-manager/article"
+    },
+    "homepage_patterns": [
+      { "pattern": "https?://space\\.bilibili\\.com/(\\d+)(?:/\\w+)?", "principal_group": 1, "canonical_prefix": "https://space.bilibili.com/", "collect_suffix": "/video" },
+      { "pattern": "https?://b23\\.tv/[A-Za-z0-9_-]+" }
+    ]
+  },
+  {
+    "key": "xianyu",
+    "name": "咸鱼",
+    "icon": "xianyu.svg",
+    "collect_supported": false,
+    "creator_urls": {
+      "home": "https://www.goofish.com/",
+      "publish": "https://www.goofish.com/",
+      "works": "https://www.goofish.com/"
+    },
+    "homepage_patterns": [
+      { "pattern": "https?://www\\.goofish\\.com/personal\\?[^\\s]+" }
+    ]
+  }
+]
