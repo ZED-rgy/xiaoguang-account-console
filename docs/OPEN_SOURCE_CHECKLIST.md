@@ -15,15 +15,15 @@
 
 - [x] 选择 Apache-2.0 许可证并添加 `LICENSE`、`NOTICE` 和包元数据。
 - [x] 使用公开身份 `ZED-rgy` 和 GitHub noreply 邮箱作为干净历史作者。
-- [ ] 使用干净的新根提交或经过审查的压缩历史发布。现有本地历史曾包含已删除的运营空间标识，不能直接原样推送。
-- [ ] 再运行一次专用敏感信息扫描，并检查待推送的所有 Git 对象。
-- [ ] 创建 GitHub 仓库后补充 `repository`、`bugs` 和 `homepage` 元数据。
+- [x] 使用干净的新根提交发布，旧本地历史未推送到公共仓库。
+- [x] 已运行专用敏感信息扫描，并检查公共 `main` 可达的全部 Git 对象。
+- [x] 已补充 `repository`、`bugs` 和 `homepage` 元数据。
 - [x] 添加隔离演示数据生成的脱敏产品截图，不包含真实账号、作品或本地路径。
 - [x] 保留项目自制产品图标；将第三方品牌 Logo 替换为项目自制的中性平台文字徽标。
 
 ## 建议完成
 
-- [ ] 配置 Windows CI，运行 `npm install`、Python 依赖安装和 `npm run check`。
+- [x] 配置 Windows CI，运行 `npm ci`、Python 依赖安装和 `npm run check`。
 - [x] 启用 GitHub 私密漏洞报告。
 - [ ] 准备首个公开版本的人工抽测清单和 release notes。
 - [ ] 决定是否公开提供预构建 Windows 成品；如提供，应补充代码签名和校验值。
