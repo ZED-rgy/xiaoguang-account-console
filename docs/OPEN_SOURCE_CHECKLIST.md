@@ -24,7 +24,7 @@
 ## 建议完成
 
 - [ ] 配置 Windows CI，运行 `npm install`、Python 依赖安装和 `npm run check`。
-- [ ] 启用 GitHub 私密漏洞报告。
+- [x] 启用 GitHub 私密漏洞报告。
 - [ ] 准备首个公开版本的人工抽测清单和 release notes。
 - [ ] 决定是否公开提供预构建 Windows 成品；如提供，应补充代码签名和校验值。
 - [ ] 在面向外部用户分发前评估 `asar`、自动升级和安装目录权限。
